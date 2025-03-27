@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mohamed Salem | Terminal Portfolio</title>
+    
+    <!-- Force full height on mobile -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Load xterm.js -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.7.0/lib/xterm-addon-fit.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xterm-addon-web-links@0.8.0/lib/xterm-addon-web-links.min.js"></script>
+    
+    <!-- Add Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Load custom styles -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Terminal window with header that looks like a real terminal window -->
+    <div class="terminal-container">
+        <div class="terminal-header">
+            <div class="terminal-buttons">
+                <div class="terminal-button close"></div>
+                <div class="terminal-button minimize"></div>
+                <div class="terminal-button maximize"></div>
+            </div>
+            <div class="terminal-title">mohamedsalem@terminal:~/portfolio</div>
+        </div>
+        <div id="terminal"></div>
+        
+        <!-- Terminal size controls (visible on hover) -->
+        <div class="terminal-controls">
+            <button class="terminal-control-btn" id="font-decrease">-</button>
+            <button class="terminal-control-btn" id="font-increase">+</button>
+        </div>
+    </div>
+    
+    <div id="matrix-container"></div>
+    
+    <!-- Warning for landscape mode on small screens -->
+    <!-- <div class="landscape-hint">For better experience, use portrait mode</div> -->
+    
+    <!-- Hidden font size controller -->
+    <div id="term-font-size-controller"></div>
+    
+    <!-- Load scripts in the correct order -->
+    <script src="js/config/terminal-config.js"></script>
+    <script src="js/data/portfolio-data.js"></script>
+    <script src="js/config/firebase-config.js"></script>
+    <script src="js/features/matrix-effect.js"></script>
+    <script src="js/features/terminal-commands.js"></script>
+    <script src="js/app.js"></script>
+    
+    <!-- Add responsive handler script -->
+    <script src="js/features/responsive-handler.js"></script>
+    
+    <!-- Add terminal refresh utility -->
+    <script src="js/features/terminal-refresh.js"></script>
+</body>
+</html>

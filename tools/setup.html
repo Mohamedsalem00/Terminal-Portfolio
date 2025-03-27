@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Portfolio Data Setup</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        pre {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow: auto;
+            font-size: 14px;
+        }
+        .upload-section {
+            margin-bottom: 20px;
+        }
+        .progress {
+            margin-top: 15px;
+            background-color: #e9ecef;
+            height: 20px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            background-color: #28a745;
+            width: 0%;
+            transition: width 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Firebase Portfolio Data Setup</h1>
+        <p>This tool will upload your portfolio data to Firebase Firestore.</p>
+        
+        <div class="upload-section">
+            <h2>Setup Steps</h2>
+            <ol>
+                <li>Make sure you're signed into your Google account associated with Firebase</li>
+                <li>Check that your Firebase configuration in firebase-config.js is correct</li>
+                <li>Click the "Upload All Data" button below to initialize your portfolio data</li>
+            </ol>
+        </div>
+        
+        <button id="uploadButton">Upload All Data to Firebase</button>
+        <button id="deleteButton" style="background-color: #e74c3c;">Delete All Data</button>
+        
+        <div class="progress">
+            <div id="progressBar" class="progress-bar"></div>
+        </div>
+        
+        <div id="status" class="status"></div>
+        
+        <h2>Portfolio Data Preview</h2>
+        <pre id="dataPreview"></pre>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    
+    <script>
+        // Load your Firebase config
+        const firebaseConfig = {
+          apiKey: "AIzaSyDkBwY47n7ZU_wjOEvhOoQCY_q30QYqiyg",
+          projectId: "portfilio-data",
+          authDomain: "portfilio-data.firebaseapp.com",
+          storageBucket: "portfilio-data.appspot.com",
+          messagingSenderId: "237586982524",
+          appId: "1:237586982524:web:8807bc7670a44c6692cbf9" // Updated with correct app ID
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        
+        // Portfolio data to upload
+        const portfolioData = {
+            bio: {
+                main: {
+                    name: "Mohamed Salem Khyarhoum",
+                    title: "Ingénieur en Sécurité des Systèmes Informatiques et Réseaux",
+                    description: "Étudiant passionné par la cybersécurité et le développement technologique. À la recherche d'un stage ou d'une opportunité pour mettre en pratique mes compétences techniques.",
+                    skills: [
+                        "Linux (Ubuntu, Kali Linux)",
+                        "Flutter", 
+                        "Laravel, Django", 
+                        "MySQL, Oracle Database",
+                        "Python, PHP, C"
+                    ]
+                }
+            },
+            projects: [
+                {
+                    id: "project1",
+                    name: "Gestion-de-Scolarite",
+                    description: "Plateforme de gestion des inscriptions et des notes scolaires",
+                    technologies: ["Laravel", "MySQL", "PHP"],
+                    githubLink: "https://github.com/mohamedsalem/gestion-scolarite"
+                },
+                {
+                    id: "project2",
+                    name: "ProfsChezVous",
+                    description: "Application mobile mettant en relation professeurs et élèves pour des cours particuliers",
+                    technologies: ["Flutter", "Django", "REST API"],
+                    githubLink: "https://github.com/mohamedsalem/profshezvous"
+                }
+            ],
+            certifications: {
+                list: {
+                    items: [
+                        "Oracle SQL (Great Learning)",
+                        "Introduction to Oracle SQL (DataCamp)"
+                    ]
+                }
+            },
+            contact: {
+                info: {
+                    email: "mohamedsalemkhyarhoum@gmail.com",
+                    github: "https://github.com/mohamedsalem",
+                    linkedin: "https://www.linkedin.com/in/mohamed-salem-kh",
+                    twitter: "@mohamedsalem"
+                }
+            },
+            experiences: [
+                {
+                    id: "exp1",
+                    company: "Syskat Technologie",
+                    position: "Stagiaire",
+                    period: "Avril 2024 - Juin 2024",
+                    location: "Tevragh Zeina, Nouakchott Nord, Mauritanie",
+                    tasks: [
+                        "Développement de l'application ProfsChezVous avec Flutter (frontend) et Django (backend)",
+                        "Implémentation de solutions de paiement en ligne et intégration d'APIs REST",
+                        "Sécurisation des données et gestion de l'authentification des utilisateurs"
+                    ]
+                },
+                {
+                    id: "exp2",
+                    company: "Syskat Technologie",
+                    position: "Stagiaire",
+                    period: "Juillet 2023 - Août 2023",
+                    location: "Tevragh Zeina, Nouakchott Nord, Mauritanie",
+                    tasks: [
+                        "Développement d'une application web de gestion de scolarité avec Laravel",
+                        "Optimisation des processus administratifs scolaires via une interface intuitive",
+                        "Conception et gestion de bases de données MySQL"
+                    ]
+                }
+            ],
+            education: [
+                {
+                    id: "edu1",
+                    institution: "iTeam University",
+                    degree: "Ingénieur en Sécurité des Systèmes Informatiques et Réseaux",
+                    period: "Septembre 2024 - Septembre 2027"
+                },
+                {
+                    id: "edu2",
+                    institution: "ISCAE",
+                    degree: "Licence en Développement Informatique",
+                    period: "Janvier 2021 - Juillet 2024"
+                }
+            ]
+        };
+
+        // Show data preview
+        document.getElementById('dataPreview').textContent = JSON.stringify(portfolioData, null, 2);
+
+        // Upload function
+        async function uploadData() {
+            const statusEl = document.getElementById('status');
+            const progressBar = document.getElementById('progressBar');
+            const uploadButton = document.getElementById('uploadButton');
+            
+            uploadButton.disabled = true;
+            statusEl.innerHTML = '<p>Starting upload...</p>';
+            statusEl.className = 'status';
+            
+            try {
+                // Calculate total documents to upload
+                let totalDocs = 0;
+                let uploadedDocs = 0;
+                
+                totalDocs += 1; // bio/main
+                totalDocs += portfolioData.projects.length;
+                totalDocs += 1; // certifications/list
+                totalDocs += 1; // contact/info
+                totalDocs += portfolioData.experiences.length;
+                totalDocs += portfolioData.education.length;
+                
+                const updateProgress = () => {
+                    uploadedDocs++;
+                    const percentage = (uploadedDocs / totalDocs) * 100;
+                    progressBar.style.width = `${percentage}%`;
+                };
+
+                // Upload bio
+                statusEl.innerHTML += '<p>Uploading bio...</p>';
+                await db.collection('bio').doc('main').set(portfolioData.bio.main);
+                updateProgress();
+                
+                // Upload projects
+                statusEl.innerHTML += '<p>Uploading projects...</p>';
+                for (const project of portfolioData.projects) {
+                    const { id, ...data } = project;
+                    await db.collection('projects').doc(id).set(data);
+                    updateProgress();
+                }
+                
+                // Upload certifications
+                statusEl.innerHTML += '<p>Uploading certifications...</p>';
+                await db.collection('certifications').doc('list').set(portfolioData.certifications.list);
+                updateProgress();
+                
+                // Upload contact
+                statusEl.innerHTML += '<p>Uploading contact info...</p>';
+                await db.collection('contact').doc('info').set(portfolioData.contact.info);
+                updateProgress();
+                
+                // Upload experiences
+                statusEl.innerHTML += '<p>Uploading experiences...</p>';
+                for (const exp of portfolioData.experiences) {
+                    const { id, ...data } = exp;
+                    await db.collection('experiences').doc(id).set(data);
+                    updateProgress();
+                }
+                
+                // Upload education
+                statusEl.innerHTML += '<p>Uploading education...</p>';
+                for (const edu of portfolioData.education) {
+                    const { id, ...data } = edu;
+                    await db.collection('education').doc(id).set(data);
+                    updateProgress();
+                }
+                
+                statusEl.innerHTML += '<p><strong>✅ All data uploaded successfully!</strong></p>';
+                statusEl.className = 'status success';
+            } catch (error) {
+                console.error('Error uploading data:', error);
+                statusEl.innerHTML += `<p><strong>❌ Error: ${error.message}</strong></p>`;
+                statusEl.className = 'status error';
+            } finally {
+                uploadButton.disabled = false;
+            }
+        }
+        
+        // Delete all data function
+        async function deleteAllData() {
+            if (!confirm('Are you sure you want to delete ALL your portfolio data? This cannot be undone!')) {
+                return;
+            }
+            
+            const statusEl = document.getElementById('status');
+            const progressBar = document.getElementById('progressBar');
+            const deleteButton = document.getElementById('deleteButton');
+            
+            deleteButton.disabled = true;
+            statusEl.innerHTML = '<p>Deleting all data...</p>';
+            statusEl.className = 'status';
+            progressBar.style.width = '0%';
+            
+            try {
+                // Delete bio
+                statusEl.innerHTML += '<p>Deleting bio...</p>';
+                await deleteCollection('bio');
+                
+                // Delete projects
+                statusEl.innerHTML += '<p>Deleting projects...</p>';
+                await deleteCollection('projects');
+                
+                // Delete certifications
+                statusEl.innerHTML += '<p>Deleting certifications...</p>';
+                await deleteCollection('certifications');
+                
+                // Delete contact
+                statusEl.innerHTML += '<p>Deleting contact info...</p>';
+                await deleteCollection('contact');
+                
+                // Delete experiences
+                statusEl.innerHTML += '<p>Deleting experiences...</p>';
+                await deleteCollection('experiences');
+                
+                // Delete education
+                statusEl.innerHTML += '<p>Deleting education...</p>';
+                await deleteCollection('education');
+                
+                progressBar.style.width = '100%';
+                statusEl.innerHTML += '<p><strong>✅ All data deleted successfully!</strong></p>';
+                statusEl.className = 'status success';
+            } catch (error) {
+                console.error('Error deleting data:', error);
+                statusEl.innerHTML += `<p><strong>❌ Error: ${error.message}</strong></p>`;
+                statusEl.className = 'status error';
+            } finally {
+                deleteButton.disabled = false;
+            }
+        }
+        
+        // Helper function to delete a collection
+        async function deleteCollection(collectionName) {
+            const snapshot = await db.collection(collectionName).get();
+            const batchSize = snapshot.size;
+            
+            if (batchSize === 0) {
+                return;
+            }
+            
+            // Delete documents in a batch
+            const batch = db.batch();
+            snapshot.docs.forEach((doc) => {
+                batch.delete(doc.ref);
+            });
+            await batch.commit();
+        }
+        
+        // Event listeners
+        document.getElementById('uploadButton').addEventListener('click', uploadData);
+        document.getElementById('deleteButton').addEventListener('click', deleteAllData);
+    </script>
+</body>
+</html>

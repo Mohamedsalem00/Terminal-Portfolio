@@ -1,0 +1,324 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    background-color: #0f172a; /* Darker background */
+    color: #10b981;
+    font-family: 'Courier New', monospace;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.terminal-container {
+    position: relative;
+    width: 90%;
+    height: 90%;
+    max-width: 1200px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+    background-color: #111827;
+    display: flex;
+    flex-direction: column;
+}
+
+.terminal-header {
+    display: flex;
+    align-items: center;
+    background-color: #1e293b;
+    padding: 8px 16px;
+    border-bottom: 1px solid #334155;
+    min-height: 30px;
+}
+
+.terminal-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.terminal-button {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.close { background-color: #ef4444; }
+.minimize { background-color: #f59e0b; }
+.maximize { background-color: #10b981; }
+
+.terminal-title {
+    margin-left: 16px;
+    font-size: 14px;
+    color: #94a3b8;
+}
+
+#terminal {
+    height: calc(100% - 40px); /* Account for header */
+    width: 100%;
+    padding: 8px;
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+#matrix-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 10;
+}
+
+@keyframes matrixRain {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(100vh); }
+}
+
+.matrix-char {
+    position: absolute;
+    color: #10b981;
+    animation: matrixRain linear infinite;
+    opacity: 0.7;
+    font-family: monospace;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+/* Improve xterm appearance */
+.xterm {
+    padding: 8px;
+}
+
+.xterm-viewport {
+    background-color: #111827 !important;
+}
+
+/* Custom cursor animation */
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+.xterm-cursor {
+    animation: blink 1s infinite;
+    background-color: #10b981 !important;
+}
+
+/* Add these styles at the end of your existing CSS file */
+
+/* Fix for xterm-helper being too white and distracting */
+.xterm-helper-textarea {
+    background-color: transparent !important;
+    color: transparent !important;
+    opacity: 0 !important;
+    pointer-events: none;
+}
+
+/* Fix any other xterm elements that might be visually distracting */
+.xterm-selection {
+    background-color: rgba(16, 185, 129, 0.3) !important; /* Use your theme green with transparency */
+    opacity: 0.5;
+}
+
+/* Ensure all xterm elements use the terminal background color */
+.xterm * {
+    background-color: inherit;
+}
+
+/* Make sure the cursor stands out but doesn't flash too aggressively */
+.xterm-cursor-layer {
+    mix-blend-mode: difference;
+}
+
+/* Improve the appearance of blinking cursor */
+.xterm.focus .xterm-cursor, .xterm:not(.focus) .xterm-cursor {
+    background-color: #10b981;
+    border-color: #10b981;
+}
+
+/* Only add these if the above solution doesn't work completely */
+
+/* Force all xterm.js elements to be transparent or blend with background */
+.xterm-helper-textarea {
+    position: absolute !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    z-index: -1000 !important;
+    opacity: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+    pointer-events: none;
+}
+
+/* Additional overrides for better appearance */
+.xterm-viewport::-webkit-scrollbar {
+    width: 8px;
+}
+
+.xterm-viewport::-webkit-scrollbar-track {
+    background: #1e293b;
+}
+
+.xterm-viewport::-webkit-scrollbar-thumb {
+    background-color: #334155;
+    border-radius: 4px;
+}
+
+/* Add these responsive styles at the end of your existing CSS file */
+
+/* Responsive layout styles */
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    background-color: #0f172a;
+    color: #10b981;
+    font-family: 'Courier New', monospace;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Terminal container with responsive sizing */
+.terminal-container {
+    position: relative;
+    width: 90%;
+    height: 90%;
+    max-width: 1200px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+    background-color: #111827;
+    
+    /* These properties help with mobile */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Make header responsive */
+.terminal-header {
+    display: flex;
+    align-items: center;
+    background-color: #1e293b;
+    padding: 8px 16px;
+    border-bottom: 1px solid #334155;
+    min-height: 30px;
+}
+
+/* Adjust terminal container for different devices */
+#terminal {
+    height: calc(100% - 40px); /* Account for header */
+    width: 100%;
+    padding: 8px;
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+/* Mobile-specific styles */
+@media screen and (max-width: 767px) {
+    .terminal-container {
+        width: 95%;
+        height: 95%;
+        border-radius: 6px;
+    }
+    
+    .terminal-title {
+        font-size: 12px;
+    }
+    
+    .terminal-button {
+        width: 10px;
+        height: 10px;
+    }
+    
+    /* Adjust font size for mobile */
+    #term-font-size-controller {
+        font-size: 13px;
+    }
+}
+
+/* Tablet-specific styles */
+@media screen and (min-width: 768px) and (max-width: 1023px) {
+    .terminal-container {
+        width: 90%;
+        height: 90%;
+    }
+    
+    /* Slightly larger font for tablets */
+    #term-font-size-controller {
+        font-size: 14px;
+    }
+}
+
+/* Landscape orientation on mobile */
+@media screen and (max-height: 500px) {
+    .terminal-container {
+        height: 85%;
+    }
+    
+    .terminal-header {
+        padding: 4px 12px;
+        min-height: 24px;
+    }
+    
+    Show a hint for landscape mode
+    .landscape-hint {
+        display: block;
+        position: fixed;
+        bottom: 5px;
+        right: 5px;
+        background-color: rgba(16, 185, 129, 0.8);
+        color: white;
+        padding: 5px 8px;
+        border-radius: 4px;
+        font-size: 11px;
+        z-index: 1000;
+    }
+}
+
+/* Hide landscape hint on larger screens */
+.landscape-hint {
+    display: none;
+}
+
+/* Add controls for terminal size */
+.terminal-controls {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    display: flex;
+    gap: 8px;
+    z-index: 100;
+    opacity: 0.3;
+    transition: opacity 0.3s;
+}
+
+.terminal-controls:hover {
+    opacity: 1;
+}
+
+.terminal-control-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: none;
+    background-color: #1e293b;
+    color: #10b981;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 16px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.3);
+}
+
+/* Dynamic font sizing controller */
+#term-font-size-controller {
+    display: none; /* Hidden element used to control font size */
+}

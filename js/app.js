@@ -708,4 +708,224 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Log successful initialization
     console.log('Terminal initialized successfully');
+
+    // Add this inside your DOMContentLoaded event listener, right after the key handler setup
+
+    // Single consolidated Ctrl+C handler
+    let ctrlCHandlerInstalled = false; // Flag to prevent duplicate handlers
+    let ctrlCInProgress = false; // Flag to prevent multiple executions
+
+    // Only install the handler if it hasn't been installed yet
+    if (!ctrlCHandlerInstalled) {
+        // First, remove any existing handlers
+        if (term._customKeyEventHandler) {
+            console.log('Removing existing key event handler');
+            term._customKeyEventHandler = null;
+        }
+
+        // Then attach the single handler
+        console.log('Attaching new key event handler');
+        term.attachCustomKeyEventHandler((e) => {
+            // Check for Ctrl+C
+            if (e.ctrlKey && (e.key === 'c' || e.keyCode === 67)) {
+                console.log('Ctrl+C detected');
+                
+                // Prevent multiple executions from rapid key presses
+                if (ctrlCInProgress) {
+                    console.log('Ctrl+C already in progress, ignoring duplicate');
+                    return false;
+                }
+                
+                // Set flag to prevent duplicate execution
+                ctrlCInProgress = true;
+                
+                // Write ^C to indicate SIGINT
+                term.write('^C');
+                
+                // Clear current command
+                commandBuffer = '';
+                cursorPosition = 0;
+                
+                // Write a new line and prompt
+                term.write('\r\n');
+                
+                // Get current directory for prompt
+                let currentDir = "/";
+                if (commands.pwd && typeof commands.pwd === 'function') {
+                    currentDir = commands.pwd();
+                }
+                
+                // Update prompt with current directory
+                term.write(`mohamedsalem:${currentDir}$ `);
+                
+                // Reset the flag after a short delay
+                setTimeout(() => {
+                    ctrlCInProgress = false;
+                }, 200);
+                
+                return false; // Prevent default handling
+            }
+            
+            return true; // Let other key events be processed normally
+        });
+        
+        ctrlCHandlerInstalled = true;
+    }
+
+    // Define window.handleCtrlC for mobile helper to use
+    window.handleCtrlC = function() {
+        console.log('Mobile Ctrl+C handler called');
+        
+        // Prevent multiple executions
+        if (ctrlCInProgress) {
+            console.log('Ctrl+C already in progress, ignoring duplicate');
+            return;
+        }
+        
+        // Set flag to prevent duplicate execution
+        ctrlCInProgress = true;
+        
+        // Write ^C to indicate SIGINT
+        term.write('^C');
+        
+        // Clear current command
+        commandBuffer = '';
+        cursorPosition = 0;
+        
+        // Write a new line and prompt
+        term.write('\r\n');
+        
+        // Get current directory for prompt
+        let currentDir = "/";
+        if (commands.pwd && typeof commands.pwd === 'function') {
+            currentDir = commands.pwd();
+        }
+        
+        // Update prompt with current directory
+        term.write(`mohamedsalem:${currentDir}$ `);
+        
+        // Reset the flag after a short delay
+        setTimeout(() => {
+            ctrlCInProgress = false;
+        }, 200);
+    };
+
+    // EXPOSE FUNCTIONS FOR MOBILE INPUT HELPER (consolidated in one place)
+    // ----------------------------------------------------------------
+    // Make these available globally for mobile helper
+    window.term = term;
+    window.commands = commands;
+    window.commandBuffer = commandBuffer;
+    window.cursorPosition = cursorPosition;
+    
+    // Function to process commands
+    window.processCommand = function() {
+        if (commandBuffer.trim()) {
+            // Save command to history
+            if (commandHistory.length === 0 || commandHistory[commandHistory.length - 1] !== commandBuffer) {
+                commandHistory.push(commandBuffer);
+            }
+            historyIndex = commandHistory.length;
+            
+            // Process the command
+            const command = commandBuffer.trim();
+            const [cmd, ...args] = command.split(' ');
+            
+            const commandFunc = commands[cmd];
+            if (commandFunc) {
+                const result = commandFunc(args);
+                if (result) {
+                    term.write(result + '\r\n');
+                }
+            } else if (cmd) {
+                term.write(`\x1b[31mCommand not found: ${cmd}\x1b[0m\r\n`);
+                term.write(`Tip: Type \x1b[33mhelp\x1b[0m to see available commands.\r\n`);
+            }
+            
+            // Reset buffer and cursor
+            commandBuffer = '';
+            cursorPosition = 0;
+            
+            // Show new prompt
+            term.write('\r\n');
+            
+            // Get current directory for prompt
+            let currentDir = "/";
+            if (commands.pwd && typeof commands.pwd === 'function') {
+                currentDir = commands.pwd();
+            }
+            
+            // Update prompt with current directory
+            term.write(`mohamedsalem:${currentDir}$ `);
+        } else {
+            // Empty command, just show a new prompt
+            term.write('\r\n');
+            
+            // Get current directory for prompt
+            let currentDir = "/";
+            if (commands.pwd && typeof commands.pwd === 'function') {
+                currentDir = commands.pwd();
+            }
+            
+            // Update prompt with current directory
+            term.write(`mohamedsalem:${currentDir}$ `);
+        }
+    };
+    
+    // Function for Tab completion
+    window.handleTabCompletion = function() {
+        handleTabKey({ preventDefault: () => {} });
+    };
+    
+    // Function for Ctrl+C handling that mobile helper can call
+    window.handleCtrlC = function() {
+        // Write ^C to indicate SIGINT
+        term.write('^C');
+        
+        // Clear current command
+        commandBuffer = '';
+        cursorPosition = 0;
+        
+        // Write a new line and prompt
+        term.write('\r\n');
+        
+        // Get current directory for prompt
+        let currentDir = "/";
+        if (commands.pwd && typeof commands.pwd === 'function') {
+            currentDir = commands.pwd();
+        }
+        
+        // Update prompt with current directory
+        term.write(`mohamedsalem:${currentDir}$ `);
+    };
+    
+    // Function to get current path
+    window.getCurrentPath = function() {
+        if (commands.pwd && typeof commands.pwd === 'function') {
+            return commands.pwd();
+        }
+        return '/';
+    };
+    
+    // Helper function to run commands
+    window.runCommand = function() {
+        handleEnterKey();
+    };
+    
+    // Additional helper for mobile Enter key
+    term.textarea.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.keyCode === 13) {
+            e.preventDefault();
+            handleEnterKey();
+            return false;
+        }
+    });
+    
+    // Detect iOS for mobile-specific fixes
+    const isMobileIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    if (isMobileIOS) {
+        // Add iOS-specific handlers here if needed
+    }
+    
+    // End of the DOMContentLoaded event handler
 });

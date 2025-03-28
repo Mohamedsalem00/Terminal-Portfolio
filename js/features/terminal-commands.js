@@ -794,5 +794,8 @@ Type \x1b[33mgoto [number]\x1b[0m to navigate.
     // Expose the current path for the terminal refresh utility
     window.getCurrentPath = () => currentPath;
 
+    // Make commands globally available for mobile helper
+    window.commands = commands;
+
     return commands;
 }

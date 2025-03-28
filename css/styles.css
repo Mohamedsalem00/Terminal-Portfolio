@@ -267,7 +267,7 @@ body, html {
         min-height: 24px;
     }
     
-    Show a hint for landscape mode
+    /* Show a hint for landscape mode */
     .landscape-hint {
         display: block;
         position: fixed;
